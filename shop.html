@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#fff8ed" />
+  <meta name="description" content="Shop the complete Sticksy sticker collection." />
+  <title>Shop all stickers — Sticksy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="shop.css" />
+</head>
+<body class="shop-page">
+  <div class="announcement"><span>✳</span> STICK SOME PERSONALITY ON EVERYTHING <span>✦</span><b>FREE SHIPPING ABOVE ₹399</b></div>
+  <header class="site-header">
+    <a class="brand" href="index.html#home" aria-label="Sticksy home"><span class="brand-mark">s!</span><span>sticksy<span class="brand-dot">.</span></span></a>
+    <button class="mobile-menu" aria-label="Open menu" aria-expanded="false">☰</button>
+    <nav class="main-nav" aria-label="Main navigation"><a href="index.html#home">Home</a><a class="current" href="shop.html">Shop all</a><a href="index.html#collections">Collections</a><a href="index.html#about">Our story</a></nav>
+    <div class="shop-actions"><a class="catalog-account" href="auth.html" aria-label="Account">♡</a><button class="mode-switch" title="Switch theme" aria-label="Switch theme"><svg class="moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="22" height="22" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg></button><a class="cart-trigger" href="index.html?cart=open" aria-label="Open shopping bag">Bag <span class="cart-count">0</span></a></div>
+  </header>
+  <main class="catalog-main">
+    <div class="catalog-intro"><div class="eyebrow"><span></span> THE WHOLE STICKSY UNIVERSE</div><h1>ALL THE LITTLE<br />THINGS TO <em>STICK.</em></h1><div class="intro-bottom"><p>Original little bits of joy for laptops, bottles, journals, and wherever your day takes you.</p><span class="hand-note">drawn to make you smile ✳</span></div><div class="intro-sparkle sparkle-a">✳</div><div class="intro-sparkle sparkle-b">✦</div></div>
+    <section class="catalog-section" aria-label="All stickers"><div class="catalog-tools"><div class="catalog-filters" role="group" aria-label="Filter products"><button class="catalog-filter active" data-filter="All">All stickers <span>06</span></button><button class="catalog-filter" data-filter="Cartoon Chaos">Pop culture</button><button class="catalog-filter" data-filter="Coding & Tech">Tech</button><button class="catalog-filter" data-filter="Automotive Culture">Auto</button><button class="catalog-filter" data-filter="College Life">College</button><button class="catalog-filter" data-filter="Aesthetic Dreams">Aesthetic</button><button class="catalog-filter" data-filter="Meme Culture">Meme</button></div><label class="catalog-search"><span>⌕</span><input type="search" placeholder="Find your favourite…" aria-label="Search stickers" /></label></div><div class="catalog-count"><span class="result-count">6 good things</span><span>ALL ORIGINAL · ALL YOURS</span></div><div class="sticker-grid" id="sticker-grid"></div><div class="catalog-end"><span>✳</span><p>That's the whole little universe.<br /><b>More good stuff is being drawn.</b></p><a href="index.html#collections">Back to the playground ↗</a></div></section>
+  </main>
+  <footer class="footer"><a class="brand footer-brand" href="index.html#home"><span class="brand-mark">s!</span><span>sticksy<span class="brand-dot">.</span></span></a><p>Little art for your big world.<br />Made with a little extra love. ✳</p><div class="footer-links"><a href="index.html#about">About us</a><a href="mailto:hello@sticksy.in">Contact</a><a href="#shipping">Shipping info</a><a href="#returns">Returns</a></div><div class="footer-social"><a href="#instagram">Instagram ↗</a><a href="#pinterest">Pinterest ↗</a></div><div class="footer-bottom"><span>© 2026 STICKSY STUDIO</span><span>MADE FOR YOUR EVERYDAY ✦</span><a href="#top">BACK TO TOP ↑</a></div></footer>
+  <dialog class="sticker-dialog"><button class="dialog-close" aria-label="Close product details">×</button><div class="dialog-content"></div></dialog>
+  <div class="shop-toast" role="status" aria-live="polite"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+  <script src="shop.js"></script>
+  <script defer src="auth-session.js"></script>
+</body>
+</html>
