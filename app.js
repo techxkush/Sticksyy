@@ -53,6 +53,17 @@ function addToCart(id){cart[id]=(cart[id]||0)+1;renderCart();openCart();showToas
 function openCart(){drawer.classList.add('open');overlay.classList.add('open');document.body.style.overflow='hidden'}
 function closeCart(){drawer.classList.remove('open');overlay.classList.remove('open');document.body.style.overflow=''}
 function quickView(id){const p=products.find(x=>x.id===id);if(!p)return;document.querySelector('.quick-content').innerHTML=`<div class="quick-image">${mockSheet(p)}</div><div class="quick-detail"><span class="product-category">${p.category}</span><h2>${p.name}</h2><div class="product-price">${money(p.price)}${p.oldPrice?`<span class="old-price">${money(p.oldPrice)}</span>`:''}</div><p>A little illustrated joy for your laptop, water bottle, journal and everywhere else. Original artwork in an A4 kiss-cut sheet format.</p><p><b>Size:</b> A4 · 8.27 × 11.69 in<br><b>Finish:</b> Protective lamination<br><b>Design:</b> Original Sticksy artwork</p><p class="fine-print">Waterproof performance has not been verified. Delivery and returns depend on the seller's shipping policy.</p><button class="button button-dark" data-add="${p.id}">ADD TO BAG <span>↗</span></button></div>`;document.querySelector('.quick-view').showModal()}
+const UPI_ID='khuranakush26@oksbi',UPI_NAME='Kush Khurana';
+function renderUpiStep(order){
+  const orderTag=order.id.slice(0,8).toUpperCase();
+  const upiUrl=`upi://pay?${new URLSearchParams({pa:UPI_ID,pn:UPI_NAME,am:Number(order.total).toFixed(2),cu:'INR',tn:`Sticksy ${orderTag}`})}`;
+  sessionStorage.setItem('sticksy-current-order',JSON.stringify({id:order.id,accessToken:order.accessToken,total:order.total}));
+  document.querySelector('.checkout-content').innerHTML=`<div class="eyebrow"><span></span> ORDER ${orderTag}</div><h2>PAY WITH UPI.</h2><p class="payment-lead">Scan the QR or open your UPI app. Pay the exact total below.</p><div class="payment-paybox"><img src="assets/upi-payment-qr.jpg" alt="Sticksy UPI payment QR for ${UPI_NAME}" /><div><span>PAY EXACTLY</span><b>${money(order.total)}</b><span>UPI ID</span><div class="upi-id-row"><code>${UPI_ID}</code><button type="button" class="copy-upi">COPY</button></div><a class="upi-open" href="${upiUrl}">OPEN UPI APP ↗</a></div></div><p class="payment-warning">After paying, enter the payer name and UTR from your UPI app. We’ll check the transfer before marking the order paid.</p><form class="payment-proof-form"><label>Payer name<input name="payerName" autocomplete="name" required maxlength="100" /></label><label>UTR / transaction reference<input name="utr" autocomplete="off" inputmode="text" placeholder="12-digit UTR or reference" required minlength="8" maxlength="22" pattern="[A-Za-z0-9]{8,22}" /></label><button class="button button-dark proof-submit" type="submit">SUBMIT PAYMENT DETAILS <span>↗</span></button></form><p class="payment-message" role="status" aria-live="polite"></p>`;
+}
+function renderPaymentSubmitted(orderTag){
+  document.querySelector('.checkout-content').innerHTML=`<div class="payment-confirmed-icon">✓</div><div class="eyebrow"><span></span> ORDER ${orderTag}</div><h2>DETAILS RECEIVED.</h2><p class="payment-lead">Your UTR is waiting for manual verification. The order will show as paid only after the transfer is confirmed in the receiving UPI account.</p><div class="pending-verification"><b>Payment status: Submitted for verification</b><span>We have not marked this payment as received yet.</span></div><a class="button button-dark order-done" href="shop.html">BACK TO STICKERS <span>↗</span></a>`;
+  sessionStorage.removeItem('sticksy-current-order');cart={};renderCart();
+}
 grid.addEventListener('click',e=>{const add=e.target.closest('[data-add]');if(add){e.stopPropagation();addToCart(add.dataset.add);return}const wish=e.target.closest('[data-wish]');if(wish){wish.classList.toggle('liked');wish.textContent=wish.classList.contains('liked')?'♥':'♡';showToast(wish.classList.contains('liked')?'Saved for later ♥':'Removed from saved');return}const quick=e.target.closest('[data-quick]');if(quick)quickView(quick.dataset.quick)});
 document.querySelector('.cart-items').addEventListener('click',e=>{const qty=e.target.closest('[data-qty]');const remove=e.target.closest('[data-remove]');if(qty){const id=qty.dataset.qty;cart[id]=Math.max(0,(cart[id]||0)+Number(qty.dataset.step));if(!cart[id])delete cart[id];renderCart()}if(remove){delete cart[remove.dataset.remove];renderCart()}});
 document.querySelector('.cart-trigger').addEventListener('click',openCart);
@@ -69,12 +80,37 @@ document.querySelector('.quick-close').addEventListener('click',()=>document.que
 document.querySelector('.quick-view').addEventListener('click',e=>{const add=e.target.closest('[data-add]');if(add){addToCart(add.dataset.add);document.querySelector('.quick-view').close()}});
 document.querySelector('.checkout-button').addEventListener('click',()=>{
   if(!countItems()){showToast('Your bag is empty — find a sticker first ✳');return}
-  const sum=subtotal();
-  document.querySelector('.checkout-content').innerHTML=`<div class="eyebrow"><span></span> ALMOST YOURS</div><h2>THE DETAILS.</h2><form class="checkout-fields"><label>Full name<input name="name" autocomplete="name" required /></label><label>Mobile number<input name="phone" inputmode="tel" autocomplete="tel" pattern="[0-9+ ()-]{10,}" required /></label><label>Email address<input type="email" name="email" autocomplete="email" required /></label><label>PIN code<input name="pin" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{6}" required /></label><label class="full">Address<input name="address" autocomplete="street-address" required /></label><label>City<input name="city" autocomplete="address-level2" required /></label><label>State<input name="state" autocomplete="address-level1" required /></label><label class="full">Payment preference<select name="payment"><option>Choose at checkout</option><option>UPI / card (online)</option><option>Cash on delivery (if available)</option></select></label></form><div class="checkout-total"><span>Order subtotal${sum<399?' + shipping':''}</span><b>${money(coupon==='STICK10'?Math.round(sum*.9):sum)}${sum<399?' + ₹49 shipping':''}</b></div><p class="fine-print">This storefront has no order server or payment gateway connected yet. Your details will not be submitted and no payment will be taken. Online payments require a verified Razorpay server integration.</p><button class="button button-dark checkout-submit" type="button">CONTINUE <span>↗</span></button>`;
+  closeCart();
+  let pending=null;try{pending=JSON.parse(sessionStorage.getItem('sticksy-current-order')||'null')}catch{}
+  if(pending?.id&&pending?.accessToken)renderUpiStep(pending);
+  else{
+    const sum=subtotal(),discount=coupon==='STICK10'?Math.round(sum*.1):0,shipping=sum>=399?0:49,total=sum-discount+shipping;
+    document.querySelector('.checkout-content').innerHTML=`<div class="eyebrow"><span></span> ALMOST YOURS</div><h2>DELIVERY DETAILS.</h2><form class="checkout-fields" id="checkout-details-form"><label>Full name<input name="name" autocomplete="name" required maxlength="100" /></label><label>Mobile number<input name="phone" inputmode="tel" autocomplete="tel" pattern="[0-9+ ()-]{8,20}" required /></label><label>Email address<input type="email" name="email" autocomplete="email" required maxlength="200" /></label><label>PIN code<input name="pin" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{6}" required /></label><label class="full">Address<input name="address" autocomplete="street-address" required minlength="5" /></label><label>City<input name="city" autocomplete="address-level2" required /></label><label>State<input name="state" autocomplete="address-level1" required /></label></form><div class="checkout-total"><span>${countItems()} sticker sheets · ${subtotal()>=399?'free':'₹49'} shipping</span><b>${money(total)}</b></div><p class="fine-print">You’ll see the UPI QR and exact payable amount next. Your order stays unconfirmed until payment is manually verified.</p><p class="checkout-error" role="status" aria-live="polite"></p><button class="button button-dark checkout-submit" type="button">CONTINUE TO UPI PAYMENT <span>↗</span></button>`;
+  }
   document.querySelector('.checkout-modal').showModal();
 });
 document.querySelector('.checkout-close').addEventListener('click',()=>document.querySelector('.checkout-modal').close());
-document.querySelector('.checkout-content').addEventListener('click',e=>{if(e.target.closest('.checkout-submit')){const form=document.querySelector('.checkout-fields');if(!form.reportValidity())return;showToast('Checkout is not connected yet. No details were sent.');}});
+document.querySelector('.checkout-content').addEventListener('click',async e=>{
+  if(e.target.closest('.copy-upi')){try{await navigator.clipboard.writeText(UPI_ID);showToast('UPI ID copied ✳')}catch{showToast(`UPI ID: ${UPI_ID}`)}return}
+  if(!e.target.closest('.checkout-submit'))return;
+  const form=document.querySelector('#checkout-details-form');if(!form||!form.reportValidity())return;
+  const button=e.target.closest('.checkout-submit'),errorBox=document.querySelector('.checkout-error');button.disabled=true;if(errorBox)errorBox.textContent='Saving your order…';
+  const values=Object.fromEntries(new FormData(form).entries());
+  try{
+    const response=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values,items:products.filter(p=>cart[p.id]).map(p=>({id:p.id,quantity:cart[p.id]})),coupon})});
+    const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not save your order.');
+    renderUpiStep(result);
+  }catch(error){if(errorBox)errorBox.textContent=error.message;button.disabled=false}
+});
+document.querySelector('.checkout-content').addEventListener('submit',async e=>{
+  if(!e.target.matches('.payment-proof-form'))return;e.preventDefault();
+  const button=e.target.querySelector('.proof-submit'),message=document.querySelector('.payment-message');button.disabled=true;message.textContent='Submitting your payment reference…';
+  let order=null;try{order=JSON.parse(sessionStorage.getItem('sticksy-current-order')||'null')}catch{}
+  if(!order?.id||!order?.accessToken){message.textContent='This payment session has expired. Please open checkout from your bag again.';button.disabled=false;return}
+  const orderTag=order.id.slice(0,8).toUpperCase(),values=Object.fromEntries(new FormData(e.target).entries());
+  try{const response=await fetch(`/api/orders/${encodeURIComponent(order.id)}/payment`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values,accessToken:order.accessToken})});const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not submit payment details.');renderPaymentSubmitted(orderTag)}
+  catch(error){message.textContent=error.message;button.disabled=false}
+});
 document.querySelector('.newsletter-form').addEventListener('submit',e=>{e.preventDefault();showToast('Thanks for your interest! Newsletter signup needs a mailing-list connection.');e.currentTarget.reset()});
 document.querySelectorAll('.section-heading,.collection-card,.manifesto-art,.manifesto-copy,.custom-banner>div,.custom-banner>.button,.newsletter>div,.newsletter-form').forEach(node=>node.classList.add('reveal'));
 observeReveals();renderProducts();renderCart();
