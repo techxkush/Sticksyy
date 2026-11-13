@@ -4,6 +4,7 @@
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}.reveal.in-view{opacity:1;transform:translateY(0)}.collection-card.reveal:nth-child(4n+2){transition-delay:.07s}.collection-card.reveal:nth-child(4n+3){transition-delay:.12s}.collection-card.reveal:nth-child(4n){transition-delay:.17s}.product-card.reveal:nth-child(3n+2){transition-delay:.08s}.product-card.reveal:nth-child(3n){transition-delay:.15s}
 @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
 /* Hand-lettered accents and replaying scroll reveals */
+
 :root{--hand:'Caveat',cursive}
 .hero h1>span:first-of-type{font-family:var(--hand);font-size:1.12em;letter-spacing:-4px;transform:rotate(-4deg)}
 .section-heading h2 em,.manifesto h2 em,.newsletter h2 em,.custom-banner h2 em{font-family:var(--hand);font-style:normal;font-size:1.14em;letter-spacing:-1.5px}
