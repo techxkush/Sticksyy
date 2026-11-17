@@ -23,6 +23,14 @@ const cartKey = 'sticksy-cart-v1';
 let cart = JSON.parse(localStorage.getItem(cartKey)||'{}');
 let coupon = '';
 const money = n => `₹${n.toLocaleString('en-IN')}`;
+async function readApiResponse(response,fallback){
+  const text=await response.text();
+  let result={};
+  if(!text)throw new Error(`The order server returned an empty response (${response.status}). Open the site through node server.js at localhost:3000 and try again.`);
+  try{result=JSON.parse(text)}catch{throw new Error(`The order server returned an unreadable response (${response.status}). Open the site through node server.js at localhost:3000 and try again.`)}
+  if(!response.ok)throw new Error(result.error||`${fallback} (server response ${response.status}).`);
+  return result;
+}
 const grid = document.querySelector('#product-grid');
 const drawer = document.querySelector('.cart-drawer');
 const overlay = document.querySelector('.overlay');
@@ -110,7 +118,7 @@ document.querySelector('.checkout-content').addEventListener('click',async e=>{
   const values=Object.fromEntries(new FormData(form).entries());
   try{
     const response=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values,items:products.filter(p=>cart[p.id]).map(p=>({id:p.id,quantity:cart[p.id]})),coupon})});
-    const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not save your order.');
+    const result=await readApiResponse(response,'Could not save your order.');
     renderUpiStep(result);
   }catch(error){if(errorBox)errorBox.textContent=error.message;button.disabled=false}
 });
@@ -120,7 +128,7 @@ document.querySelector('.checkout-content').addEventListener('submit',async e=>{
   let order=null;try{order=JSON.parse(sessionStorage.getItem('sticksy-current-order')||'null')}catch{}
   if(!order?.id||!order?.accessToken){message.textContent='This payment session has expired. Please open checkout from your bag again.';button.disabled=false;return}
   const orderTag=order.id.slice(0,8).toUpperCase(),values=Object.fromEntries(new FormData(e.target).entries());
-  try{const response=await fetch(`/api/orders/${encodeURIComponent(order.id)}/payment`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values,accessToken:order.accessToken})});const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not submit payment details.');renderPaymentSubmitted(orderTag)}
+  try{const response=await fetch(`/api/orders/${encodeURIComponent(order.id)}/payment`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...values,accessToken:order.accessToken})});await readApiResponse(response,'Could not submit payment details.');renderPaymentSubmitted(orderTag)}
   catch(error){message.textContent=error.message;button.disabled=false}
 });
 document.querySelector('.newsletter-form').addEventListener('submit',e=>{e.preventDefault();showToast('Thanks for your interest! Newsletter signup needs a mailing-list connection.');e.currentTarget.reset()});
