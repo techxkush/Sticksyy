@@ -5,12 +5,12 @@ Sticksy is a playful sticker storefront for premium A4 sticker sheets. It is bui
 ## What is in the project
 
 - **Home page** (`index.html`): brand story, collections, product highlights, and pink/blue sticker-style entry points.
-- **Shop page** (`shop.html`): all six listed designs, search, category filters, product detail dialogs, tilt effects, and a light/dark toggle.
+- **Shop page** (`shop.html`): all 18 provided sticker designs, search, category filters, product detail dialogs, tilt effects, and a light/dark toggle.
 - **Theme page** (`themes.html`): pink Girly Sticker Themes and blue Boys’ Sticker Themes, with links into the matching shop category.
 - **Cart and checkout**: browser-saved cart, quantities, coupon, shipping progress, invoice-style summary, UPI QR, and payer-name/UTR submission. Persistent orders require the Supabase SQL and server secret setup below.
 - **Sign-in page** (`auth.html`): Supabase Google OAuth and phone OTP flows. The project URL and public publishable key are set in `supabase-config.js`; Google and SMS providers still need to be enabled in Supabase.
 - **Admin route** (`/admin`): a server-protected local dashboard. The current dashboard shows the listed catalog, while live order, inventory, customer, and revenue management still need a database connection.
-- **Sticker artwork**: the two supplied images are in `assets/`; remaining product cards use illustrated mockups.
+- **Sticker artwork**: all 18 supplied sticker sheets are stored in `assets/` and used across the shop, homepage, and audience previews.
 
 ## Run locally
 

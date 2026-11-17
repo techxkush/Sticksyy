@@ -1,14 +1,26 @@
 const catalogProducts = [
-  {id:'cartoon-chaos',name:'Bollywood Pop Culture A4 Sheet',category:'Cartoon Chaos',price:199,oldPrice:249,art:'☺ ✿ ✦ ☁ ♥ ϟ ☻ ☼ ✧',title:'BOLLYWOOD FAN CLUB',image:'assets/bollywood-stickers.png',tone:'pink',badge:'BESTSELLER'},
-  {id:'developer-life',name:'Engineer Mode A4 Sheet',category:'Coding & Tech',price:199,oldPrice:249,art:'⌘ { } ⚡ ☕ ◉ ϟ <3 ✦',title:'ENGINEER ENERGY',image:'assets/engineer-stickers.png',tone:'lav',badge:'BESTSELLER'},
-  {id:'midnight-rider',name:'Midnight Rider A4 Sheet',category:'Automotive Culture',price:199,oldPrice:249,art:'ϟ ✦ ☾ ◉ ★ ☻ ⚡ ✧',title:'NIGHT DRIVE CLUB',tone:'green'},
-  {id:'college-survival',name:'College Survival Kit',category:'College Life',price:199,art:'✎ ☕ ✿ ☻ ✦ ☼ ♥ ☁',title:'BARELY MAKING IT',tone:'blue'},
-  {id:'pastel-dreams',name:'Pastel Dreams A4 Sheet',category:'Aesthetic Dreams',price:199,art:'☾ ✿ ♡ ☁ ✧ ☼ ♥ ✦',title:'SWEET DAYDREAM',tone:'yellow'},
-  {id:'meme-therapy',name:'Meme Therapy A4 Sheet',category:'Meme Culture',price:199,art:":) ☻ ✿ ¯\\_(ツ)_/¯ ☕ ♥ ✦",title:'IT IS WHAT IT IS',tone:'coral'}
+  {id:'racing-never-stops',name:'Racing Never Stops A4 Sheet',category:'Automotive Culture',audience:'boys',price:199,image:'assets/racing-never-stops.jpeg',tone:'blue',badge:'BOYS’ PICK'},
+  {id:'too-smart-tech',name:'Too Smart to Settle A4 Sheet',category:'Coding & Tech',audience:'both',price:199,image:'assets/too-smart-tech.jpeg',tone:'lav',badge:'FAN FAVOURITE'},
+  {id:'cherry-vintage',name:'Cherry Vintage A4 Sheet',category:'Aesthetic Dreams',audience:'girls',price:199,image:'assets/cherry-vintage.jpeg',tone:'coral'},
+  {id:'matcha-love',name:'Matcha Love & Blossom A4 Sheet',category:'Aesthetic Dreams',audience:'girls',price:199,image:'assets/matcha-love.jpeg',tone:'green',badge:'GIRLS’ PICK'},
+  {id:'girls-who-build',name:'Girls Who Build A4 Sheet',category:'Coding & Tech',audience:'girls',price:199,image:'assets/girls-who-build.jpeg',tone:'yellow'},
+  {id:'soft-pink-tech',name:'Soft Pink Tech & Dreams A4 Sheet',category:'Coding & Tech',audience:'girls',price:199,image:'assets/soft-pink-tech.jpeg',tone:'pink'},
+  {id:'positive-ocean-days',name:'Positive Ocean Days A4 Sheet',category:'Aesthetic Dreams',audience:'girls',price:199,image:'assets/positive-ocean-days.jpeg',tone:'blue'},
+  {id:'ceo-own-universe',name:'CEO of My Own Universe A4 Sheet',category:'Aesthetic Dreams',audience:'girls',price:199,image:'assets/ceo-own-universe.jpeg',tone:'green'},
+  {id:'boss-babe',name:'Boss Babe A4 Sheet',category:'Aesthetic Dreams',audience:'girls',price:199,image:'assets/boss-babe.jpeg',tone:'pink',badge:'GIRLS’ PICK'},
+  {id:'scooter-girl-era',name:'Scooter Girl Era A4 Sheet',category:'Automotive Culture',audience:'girls',price:199,image:'assets/scooter-girl-era.jpeg',tone:'coral'},
+  {id:'cherries-and-bows',name:'Cherries & Bows A4 Sheet',category:'Aesthetic Dreams',audience:'girls',price:199,image:'assets/cherries-and-bows.jpeg',tone:'yellow'},
+  {id:'gentlemans-cricket',name:'Gentleman’s Cricket A4 Sheet',category:'Sports & Fitness',audience:'boys',price:199,image:'assets/gentlemans-cricket.jpeg',tone:'blue',badge:'BOYS’ PICK'},
+  {id:'gym-rat-club',name:'Gym Rat Club A4 Sheet',category:'Sports & Fitness',audience:'boys',price:199,image:'assets/gym-rat-club.jpeg',tone:'green'},
+  {id:'dreamy-lavender',name:'Dreamy Lavender A4 Sheet',category:'Music & Fandom',audience:'girls',price:199,image:'assets/dreamy-lavender.jpeg',tone:'lav'},
+  {id:'red-baddie',name:'Red Baddie A4 Sheet',category:'Aesthetic Dreams',audience:'girls',price:199,image:'assets/red-baddie.jpeg',tone:'coral'},
+  {id:'music-girl-era',name:'Music Girl Era A4 Sheet',category:'Music & Fandom',audience:'girls',price:199,image:'assets/music-girl-era.jpeg',tone:'pink'},
+  {id:'fan-sheet-01',name:'The Fan Sheet Vol. 1',category:'Music & Fandom',audience:'both',price:199,image:'assets/fan-sheet-01.jpeg',tone:'blue'},
+  {id:'fan-sheet-02',name:'The Fan Sheet Vol. 2',category:'Music & Fandom',audience:'both',price:199,image:'assets/fan-sheet-02.jpeg',tone:'coral'}
 ];
 const stickerGrid=document.querySelector('#sticker-grid');
 const toast=document.querySelector('.shop-toast');
-let activeFilter='All',searchTerm='',toastTimer;
+let activeFilter='All',activeAudience=new URLSearchParams(location.search).get('audience')||'All',searchTerm='',toastTimer;
 const cash=value=>`₹${value.toLocaleString('en-IN')}`;
 const escapeHTML=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 function stickerArt(product,dialog=false){
@@ -17,7 +29,7 @@ function stickerArt(product,dialog=false){
   const words=product.title.split(/\s+/),mid=Math.ceil(words.length/2),title=words.length>2?`${words.slice(0,mid).join(' ')}<br />${words.slice(mid).join(' ')}`:escapeHTML(product.title);
   return `<div class="product mini-sheet${dialog?' dialog-mini':''}"><div class="mini-title">${title}</div><div class="mini-tiles">${Array.from({length:9},(_,i)=>`<i>${escapeHTML(art[i]||'✦')}</i>`).join('')}</div><div class="mini-foot">STICKSY CLUB · VOL. 01</div></div>`;
 }
-function shownProducts(){return catalogProducts.filter(product=>(activeFilter==='All'||product.category===activeFilter)&&`${product.name} ${product.category}`.toLowerCase().includes(searchTerm))}
+function shownProducts(){return catalogProducts.filter(product=>(activeFilter==='All'||product.category===activeFilter)&&(activeAudience==='All'||product.audience===activeAudience||product.audience==='both')&&`${product.name} ${product.category}`.toLowerCase().includes(searchTerm))}
 function renderCatalog(){
   const items=shownProducts();
   stickerGrid.innerHTML=items.length?items.map((product,index)=>`<article class="sticker-item reveal" data-product="${product.id}"><div class="box sticker-card tone-${product.tone}" data-tilt data-detail="${product.id}" tabindex="0" role="button" aria-label="View ${escapeHTML(product.name)} details">${product.badge?`<span class="tag">${product.badge}</span>`:''}<h2 class="name">${escapeHTML(product.name)}</h2><div class="circle"></div>${stickerArt(product)}<button class="buy" type="button" data-add="${product.id}">ADD TO BAG · ${cash(product.price)}</button></div><div class="product-meta"><div><h2>${escapeHTML(product.name)}</h2><p>${escapeHTML(product.category)} · A4 sticker sheet</p></div><span class="product-price-shop">${cash(product.price)}${product.oldPrice?`<del>${cash(product.oldPrice)}</del>`:''}</span></div><button class="mobile-add" type="button" data-add="${product.id}">ADD TO BAG +</button></article>`).join(''):'<p class="no-stickers">No stickers found. Try another little search ✳</p>';
@@ -42,11 +54,14 @@ stickerGrid.addEventListener('keydown',event=>{if(event.target.closest('[data-ad
 document.querySelector('.dialog-content').addEventListener('click',event=>{const add=event.target.closest('[data-add]');if(add){addProduct(add.dataset.add);document.querySelector('.sticker-dialog').close()}});
 document.querySelector('.dialog-close').addEventListener('click',()=>document.querySelector('.sticker-dialog').close());
 document.querySelector('.sticker-dialog').addEventListener('click',event=>{if(event.target===event.currentTarget)event.currentTarget.close()});
-document.querySelectorAll('.catalog-filter').forEach(button=>button.addEventListener('click',()=>{document.querySelector('.catalog-filter.active')?.classList.remove('active');button.classList.add('active');activeFilter=button.dataset.filter;renderCatalog()}));
+function syncFilterButtons(){document.querySelectorAll('.catalog-filter').forEach(button=>button.classList.toggle('active',button.dataset.audienceFilter?button.dataset.audienceFilter===activeAudience:(button.dataset.filter===activeFilter&&(button.dataset.filter!=='All'||activeAudience==='All'))))}
+document.querySelectorAll('.catalog-filter').forEach(button=>button.addEventListener('click',()=>{if(button.dataset.audienceFilter){activeAudience=button.dataset.audienceFilter;activeFilter='All'}else{activeFilter=button.dataset.filter;if(activeFilter==='All')activeAudience='All'}syncFilterButtons();renderCatalog()}));
 document.querySelector('.catalog-search input').addEventListener('input',event=>{searchTerm=event.currentTarget.value.trim().toLowerCase();renderCatalog()});
 document.querySelector('.mode-switch').addEventListener('click',event=>{const dark=document.body.classList.toggle('is-dark');event.currentTarget.classList.toggle('active',dark);localStorage.setItem('sticksy-shop-theme',dark?'dark':'light')});
 document.querySelector('.mobile-menu').addEventListener('click',event=>{const nav=document.querySelector('.main-nav');nav.classList.toggle('open');event.currentTarget.setAttribute('aria-expanded',nav.classList.contains('open'))});
 const savedTheme=localStorage.getItem('sticksy-shop-theme');if(savedTheme==='dark'){document.body.classList.add('is-dark');document.querySelector('.mode-switch').classList.add('active')}
 const requestedCategory=new URLSearchParams(location.search).get('category');
-if(catalogProducts.some(product=>product.category===requestedCategory)){activeFilter=requestedCategory;document.querySelectorAll('.catalog-filter').forEach(button=>button.classList.toggle('active',button.dataset.filter===activeFilter))}
+if(catalogProducts.some(product=>product.category===requestedCategory))activeFilter=requestedCategory;
+syncFilterButtons();
+document.querySelector('.catalog-filter[data-filter="All"] span').textContent=String(catalogProducts.length).padStart(2,'0');
 renderCatalog();updateBagCount();

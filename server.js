@@ -63,12 +63,24 @@ async function dbRequest(resource,options={}){
 }
 async function safeDbRequest(resource,options={}){try{return await dbRequest(resource,options)}catch{return {ok:false,status:503,data:null}}}
 const catalog={
-  'cartoon-chaos':{name:'Bollywood Pop Culture A4 Sheet',price:199},
-  'developer-life':{name:'Engineer Mode A4 Sheet',price:199},
-  'midnight-rider':{name:'Midnight Rider A4 Sheet',price:199},
-  'college-survival':{name:'College Survival Kit',price:199},
-  'pastel-dreams':{name:'Pastel Dreams A4 Sheet',price:199},
-  'meme-therapy':{name:'Meme Therapy A4 Sheet',price:199}
+  'racing-never-stops':{name:'Racing Never Stops A4 Sheet',price:199},
+  'too-smart-tech':{name:'Too Smart to Settle A4 Sheet',price:199},
+  'cherry-vintage':{name:'Cherry Vintage A4 Sheet',price:199},
+  'matcha-love':{name:'Matcha Love & Blossom A4 Sheet',price:199},
+  'girls-who-build':{name:'Girls Who Build A4 Sheet',price:199},
+  'soft-pink-tech':{name:'Soft Pink Tech & Dreams A4 Sheet',price:199},
+  'positive-ocean-days':{name:'Positive Ocean Days A4 Sheet',price:199},
+  'ceo-own-universe':{name:'CEO of My Own Universe A4 Sheet',price:199},
+  'boss-babe':{name:'Boss Babe A4 Sheet',price:199},
+  'scooter-girl-era':{name:'Scooter Girl Era A4 Sheet',price:199},
+  'cherries-and-bows':{name:'Cherries & Bows A4 Sheet',price:199},
+  'gentlemans-cricket':{name:'Gentleman’s Cricket A4 Sheet',price:199},
+  'gym-rat-club':{name:'Gym Rat Club A4 Sheet',price:199},
+  'dreamy-lavender':{name:'Dreamy Lavender A4 Sheet',price:199},
+  'red-baddie':{name:'Red Baddie A4 Sheet',price:199},
+  'music-girl-era':{name:'Music Girl Era A4 Sheet',price:199},
+  'fan-sheet-01':{name:'The Fan Sheet Vol. 1',price:199},
+  'fan-sheet-02':{name:'The Fan Sheet Vol. 2',price:199}
 };
 function serveFile(res,filePath,status=200){
   if(!fs.existsSync(filePath)||!fs.statSync(filePath).isFile())return send(res,404,'Not found');
