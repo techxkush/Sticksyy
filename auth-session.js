@@ -1,14 +1,10 @@
-const authConfig=window.STICKSY_SUPABASE||{};
+const authConfig=window.STICKSY_SUPABASE||{};let authClient=null;
+function signedOut(link){if(!link)return;link.textContent='Sign in';link.href='auth.html';link.classList.remove('is-signed-in');link.removeAttribute('title');link.setAttribute('aria-label','Sign in');link.parentElement?.querySelector('.account-dropdown')?.remove()}
 function setAccountState(user){
-  const link=document.querySelector('.account-btn,.catalog-account');if(!link||!user)return;
-  const identity=user.user_metadata?.full_name||user.user_metadata?.name||user.email||user.phone||'Your account';
-  const initial=identity.trim().charAt(0).toUpperCase()||'♡';
-  link.textContent=identity.split(' ')[0].split('@')[0]||initial;link.href='account.html';link.title=identity;link.setAttribute('aria-label',`Signed in as ${identity}. Open your account`);link.classList.add('is-signed-in');
+ const link=document.querySelector('.account-btn,.catalog-account');if(!link)return;if(!user){signedOut(link);return}
+ const identity=user.user_metadata?.full_name||user.user_metadata?.name||user.email||user.phone||'Your account';
+ link.textContent=identity.split(' ')[0].split('@')[0]||'Profile';link.href='account.html';link.title=identity;link.setAttribute('aria-label',`Profile for ${identity}`);link.classList.add('is-signed-in');
+ let menu=link.parentElement.querySelector('.account-dropdown');if(!menu){menu=document.createElement('div');menu.className='account-dropdown';menu.innerHTML='<div class="account-dropdown-user"><b></b><small></small></div><a href="account.html#orders">Your orders</a><a href="account.html#favourites">Favourites</a><a href="index.html?cart=open">Your bag</a><button type="button" class="account-signout">Sign out</button>';link.parentElement.classList.add('account-menu-host');link.after(menu);link.addEventListener('click',event=>{event.preventDefault();const open=menu.classList.toggle('open');link.setAttribute('aria-expanded',String(open))});menu.querySelector('.account-signout').addEventListener('click',async()=>{if(authClient)await authClient.auth.signOut();menu.classList.remove('open');link.setAttribute('aria-expanded','false')});document.addEventListener('click',event=>{if(!link.parentElement.contains(event.target)){menu.classList.remove('open');link.setAttribute('aria-expanded','false')}})}
+ menu.querySelector('b').textContent=identity;menu.querySelector('small').textContent=user.email||user.phone||'';
 }
-if(authConfig.url&&authConfig.publishableKey){
-  import('https://esm.sh/@supabase/supabase-js@2').then(async({createClient})=>{
-    const client=createClient(authConfig.url,authConfig.publishableKey);
-    const {data}=await client.auth.getSession();if(data.session?.user)setAccountState(data.session.user);
-    client.auth.onAuthStateChange((_event,session)=>{if(session?.user)setAccountState(session.user)});
-  }).catch(()=>{});
-}
+if(authConfig.url&&authConfig.publishableKey){import('https://esm.sh/@supabase/supabase-js@2').then(async({createClient})=>{authClient=createClient(authConfig.url,authConfig.publishableKey);const {data}=await authClient.auth.getSession();setAccountState(data.session?.user||null);authClient.auth.onAuthStateChange((_event,session)=>setAccountState(session?.user||null))}).catch(()=>{})}
