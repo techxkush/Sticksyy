@@ -3,7 +3,7 @@ function setAccountState(user){
   const link=document.querySelector('.account-btn,.catalog-account');if(!link||!user)return;
   const identity=user.user_metadata?.full_name||user.user_metadata?.name||user.email||user.phone||'Your account';
   const initial=identity.trim().charAt(0).toUpperCase()||'♡';
-  link.textContent=initial;link.title=identity;link.setAttribute('aria-label',`Signed in as ${identity}. Open your account`);link.classList.add('is-signed-in');
+  link.textContent=identity.split(' ')[0].split('@')[0]||initial;link.href='account.html';link.title=identity;link.setAttribute('aria-label',`Signed in as ${identity}. Open your account`);link.classList.add('is-signed-in');
 }
 if(authConfig.url&&authConfig.publishableKey){
   import('https://esm.sh/@supabase/supabase-js@2').then(async({createClient})=>{
