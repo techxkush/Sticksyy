@@ -1,4 +1,4 @@
-const catalogProducts = [
+let catalogProducts = [
   {id:'racing-never-stops',name:'Racing Never Stops A4 Sheet',category:'Automotive Culture',audience:'boys',price:199,image:'assets/racing-never-stops.jpeg',tone:'blue',badge:'BOYS’ PICK'},
   {id:'too-smart-tech',name:'Too Smart to Settle A4 Sheet',category:'Coding & Tech',audience:'both',price:199,image:'assets/too-smart-tech.jpeg',tone:'lav',badge:'FAN FAVOURITE'},
   {id:'cherry-vintage',name:'Cherry Vintage A4 Sheet',category:'Aesthetic Dreams',audience:'girls',price:199,image:'assets/cherry-vintage.jpeg',tone:'coral'},
@@ -64,4 +64,5 @@ const requestedCategory=new URLSearchParams(location.search).get('category');
 if(catalogProducts.some(product=>product.category===requestedCategory))activeFilter=requestedCategory;
 syncFilterButtons();
 document.querySelector('.catalog-filter[data-filter="All"] span').textContent=String(catalogProducts.length).padStart(2,'0');
-renderCatalog();updateBagCount();
+fetch("/api/products").then(r=>r.json()).then(data=>{if(Array.isArray(data.products)){catalogProducts=data.products;renderCatalog();updateBagCount()}}).catch(()=>{});renderCatalog();updateBagCount();
+

@@ -1,0 +1,169 @@
+[
+  {
+    "id": "racing-never-stops",
+    "name": "Racing Never Stops A4 Sheet",
+    "category": "Automotive Culture",
+    "audience": "boys",
+    "price": 199,
+    "image": "assets/racing-never-stops.jpeg",
+    "tone": "blue",
+    "badge": "BOYS’ PICK"
+  },
+  {
+    "id": "too-smart-tech",
+    "name": "Too Smart to Settle A4 Sheet",
+    "category": "Coding & Tech",
+    "audience": "both",
+    "price": 199,
+    "image": "assets/too-smart-tech.jpeg",
+    "tone": "lav",
+    "badge": "FAN FAVOURITE"
+  },
+  {
+    "id": "cherry-vintage",
+    "name": "Cherry Vintage A4 Sheet",
+    "category": "Aesthetic Dreams",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/cherry-vintage.jpeg",
+    "tone": "coral"
+  },
+  {
+    "id": "matcha-love",
+    "name": "Matcha Love & Blossom A4 Sheet",
+    "category": "Aesthetic Dreams",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/matcha-love.jpeg",
+    "tone": "green",
+    "badge": "GIRLS’ PICK"
+  },
+  {
+    "id": "girls-who-build",
+    "name": "Girls Who Build A4 Sheet",
+    "category": "Coding & Tech",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/girls-who-build.jpeg",
+    "tone": "yellow"
+  },
+  {
+    "id": "soft-pink-tech",
+    "name": "Soft Pink Tech & Dreams A4 Sheet",
+    "category": "Coding & Tech",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/soft-pink-tech.jpeg",
+    "tone": "pink"
+  },
+  {
+    "id": "positive-ocean-days",
+    "name": "Positive Ocean Days A4 Sheet",
+    "category": "Aesthetic Dreams",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/positive-ocean-days.jpeg",
+    "tone": "blue"
+  },
+  {
+    "id": "ceo-own-universe",
+    "name": "CEO of My Own Universe A4 Sheet",
+    "category": "Aesthetic Dreams",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/ceo-own-universe.jpeg",
+    "tone": "green"
+  },
+  {
+    "id": "boss-babe",
+    "name": "Boss Babe A4 Sheet",
+    "category": "Aesthetic Dreams",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/boss-babe.jpeg",
+    "tone": "pink",
+    "badge": "GIRLS’ PICK"
+  },
+  {
+    "id": "scooter-girl-era",
+    "name": "Scooter Girl Era A4 Sheet",
+    "category": "Automotive Culture",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/scooter-girl-era.jpeg",
+    "tone": "coral"
+  },
+  {
+    "id": "cherries-and-bows",
+    "name": "Cherries & Bows A4 Sheet",
+    "category": "Aesthetic Dreams",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/cherries-and-bows.jpeg",
+    "tone": "yellow"
+  },
+  {
+    "id": "gentlemans-cricket",
+    "name": "Gentleman’s Cricket A4 Sheet",
+    "category": "Sports & Fitness",
+    "audience": "boys",
+    "price": 199,
+    "image": "assets/gentlemans-cricket.jpeg",
+    "tone": "blue",
+    "badge": "BOYS’ PICK"
+  },
+  {
+    "id": "gym-rat-club",
+    "name": "Gym Rat Club A4 Sheet",
+    "category": "Sports & Fitness",
+    "audience": "boys",
+    "price": 199,
+    "image": "assets/gym-rat-club.jpeg",
+    "tone": "green"
+  },
+  {
+    "id": "dreamy-lavender",
+    "name": "Dreamy Lavender A4 Sheet",
+    "category": "Music & Fandom",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/dreamy-lavender.jpeg",
+    "tone": "lav"
+  },
+  {
+    "id": "red-baddie",
+    "name": "Red Baddie A4 Sheet",
+    "category": "Aesthetic Dreams",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/red-baddie.jpeg",
+    "tone": "coral"
+  },
+  {
+    "id": "music-girl-era",
+    "name": "Music Girl Era A4 Sheet",
+    "category": "Music & Fandom",
+    "audience": "girls",
+    "price": 199,
+    "image": "assets/music-girl-era.jpeg",
+    "tone": "pink"
+  },
+  {
+    "id": "fan-sheet-01",
+    "name": "The Fan Sheet Vol. 1",
+    "category": "Music & Fandom",
+    "audience": "both",
+    "price": 199,
+    "image": "assets/fan-sheet-01.jpeg",
+    "tone": "blue"
+  },
+  {
+    "id": "fan-sheet-02",
+    "name": "The Fan Sheet Vol. 2",
+    "category": "Music & Fandom",
+    "audience": "both",
+    "price": 199,
+    "image": "assets/fan-sheet-02.jpeg",
+    "tone": "coral"
+  }
+]

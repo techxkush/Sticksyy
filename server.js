@@ -137,7 +137,21 @@ const server=http.createServer(async(req,res)=>{
     if(!Array.isArray(updated.data)||!updated.data.length)return json(res,409,{error:'This order is no longer awaiting payment, or the order link is invalid.'});
     return json(res,200,{status:'submitted',message:'Payment details received. We’ll verify the UPI transfer before confirming the order.'});
   }
-  if(pathname==='/api/admin/orders'&&req.method==='GET'){
+  if(pathname==='/api/products'&&req.method==='GET'){
+    try{return json(res,200,{products:JSON.parse(fs.readFileSync(path.join(root,'products.json'),'utf8'))})}catch{return json(res,500,{error:'Catalog is unavailable.'})}
+  }
+  if(pathname==='/api/admin/products'&&(req.method==='POST'||req.method==='DELETE')){
+    if(!validSession(req))return json(res,401,{error:'Admin sign-in required.'});
+    let products;try{products=JSON.parse(fs.readFileSync(path.join(root,'products.json'),'utf8'))}catch{return json(res,500,{error:'Catalog is unavailable.'})}
+    let body;try{body=await readJsonBody(req)}catch{return json(res,400,{error:'Invalid product details.'})}
+    if(req.method==='DELETE'){
+      const next=products.filter(p=>p.id!==String(body.id||''));if(next.length===products.length)return json(res,404,{error:'Product not found.'});
+      fs.writeFileSync(path.join(root,'products.json'),JSON.stringify(next,null,2));delete catalog[body.id];return json(res,200,{products:next});
+    }
+    const name=String(body.name||'').trim(),category=String(body.category||'').trim(),image=String(body.image||'').trim(),audience=String(body.audience||'');const price=Number(body.price);
+    if(name.length<2||!category||!Number.isInteger(price)||price<1||!['girls','boys','both'].includes(audience)||!/^https:\/\//i.test(image))return json(res,400,{error:'Enter a name, valid price, category, audience, and HTTPS image URL.'});
+    const id='custom-'+crypto.randomBytes(6).toString('hex');const product={id,name,category,audience,price,image,tone:'pink'};products.push(product);catalog[id]={name,price};fs.writeFileSync(path.join(root,'products.json'),JSON.stringify(products,null,2));return json(res,201,{products});
+  }  if(pathname==='/api/admin/orders'&&req.method==='GET'){
     if(!validSession(req))return json(res,401,{error:'Admin sign-in required.'});
     if(!dbReady())return json(res,503,{error:'Order database is not configured yet.'});
     const result=await safeDbRequest('orders?select=id,created_at,customer_name,phone,email,shipping_address,city,state,pincode,items,subtotal,discount,shipping,total,payment_status,order_status,payer_name,utr,payment_submitted_at,verified_at&order=created_at.desc&limit=100');
@@ -196,3 +210,4 @@ server.listen(port,'127.0.0.1',()=>{
   if(!process.env.STICKSY_ADMIN_USERNAME||!process.env.STICKSY_ADMIN_PASSWORD)console.warn('Admin credentials are not configured. Set STICKSY_ADMIN_USERNAME and STICKSY_ADMIN_PASSWORD in .env.local.');
   if(!dbReady())console.warn('UPI order storage is not configured. Run supabase/orders.sql and set SUPABASE_SECRET_KEY in .env.local.');
 });
+
