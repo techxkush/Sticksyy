@@ -50,7 +50,7 @@ function send(res,status,body,headers={}){
 }
 function redirect(res,location){res.writeHead(303,{Location:location,'Cache-Control':'no-store'});res.end()}
 function readBody(req){return new Promise((resolve,reject)=>{let body='';req.on('data',chunk=>{body+=chunk;if(body.length>8192){reject(new Error('Request too large'));req.destroy()}});req.on('end',()=>resolve(new URLSearchParams(body)))})}
-function readJsonBody(req){return new Promise((resolve,reject)=>{let body='';req.on('data',chunk=>{body+=chunk;if(body.length>32768){reject(new Error('Request too large'));req.destroy()}});req.on('end',()=>{try{resolve(JSON.parse(body||'{}'))}catch{reject(new Error('Invalid JSON'))}})})}
+function readJsonBody(req,maxBytes=32768){return new Promise((resolve,reject)=>{let body='';req.on('data',chunk=>{body+=chunk;if(body.length>maxBytes){reject(new Error('Request too large'));req.destroy()}});req.on('end',()=>{try{resolve(JSON.parse(body||'{}'))}catch{reject(new Error('Invalid JSON'))}})})}
 function json(res,status,data){return send(res,status,JSON.stringify(data),{'Content-Type':'application/json; charset=utf-8'})}
 function dbReady(){return Boolean(process.env.SUPABASE_URL&&process.env.SUPABASE_SECRET_KEY)}
 async function dbRequest(resource,options={}){
@@ -143,14 +143,18 @@ const server=http.createServer(async(req,res)=>{
   if(pathname==='/api/admin/products'&&(req.method==='POST'||req.method==='DELETE')){
     if(!validSession(req))return json(res,401,{error:'Admin sign-in required.'});
     let products;try{products=JSON.parse(fs.readFileSync(path.join(root,'products.json'),'utf8'))}catch{return json(res,500,{error:'Catalog is unavailable.'})}
-    let body;try{body=await readJsonBody(req)}catch{return json(res,400,{error:'Invalid product details.'})}
+    let body;try{body=await readJsonBody(req,8*1024*1024)}catch{return json(res,400,{error:'Upload is too large or product details are invalid. Choose an image under 5 MB.'})}
     if(req.method==='DELETE'){
-      const next=products.filter(p=>p.id!==String(body.id||''));if(next.length===products.length)return json(res,404,{error:'Product not found.'});
+      const removed=products.find(p=>p.id===String(body.id||''));const next=products.filter(p=>p.id!==String(body.id||''));if(next.length===products.length)return json(res,404,{error:'Product not found.'});
+      if(removed.image&&/^assets\/catalog-[a-f0-9]+\.(png|jpe?g|webp)$/.test(removed.image))try{fs.unlinkSync(path.join(root,removed.image))}catch{}
       fs.writeFileSync(path.join(root,'products.json'),JSON.stringify(next,null,2));delete catalog[body.id];return json(res,200,{products:next});
     }
-    const name=String(body.name||'').trim(),category=String(body.category||'').trim(),image=String(body.image||'').trim(),audience=String(body.audience||'');const price=Number(body.price);
-    if(name.length<2||!category||!Number.isInteger(price)||price<1||!['girls','boys','both'].includes(audience)||!/^https:\/\//i.test(image))return json(res,400,{error:'Enter a name, valid price, category, audience, and HTTPS image URL.'});
-    const id='custom-'+crypto.randomBytes(6).toString('hex');const product={id,name,category,audience,price,image,tone:'pink'};products.push(product);catalog[id]={name,price};fs.writeFileSync(path.join(root,'products.json'),JSON.stringify(products,null,2));return json(res,201,{products});
+    const name=String(body.name||'').trim(),category=String(body.category||'').trim(),audience=String(body.audience||'');const price=Number(body.price);
+    if(name.length<2||!category||!Number.isInteger(price)||price<1||!['girls','boys','both'].includes(audience))return json(res,400,{error:'Enter a valid name, price, category, and audience.'});
+    const match=String(body.imageData||'').match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/);if(!match)return json(res,400,{error:'Choose a PNG, JPG, or WebP image.'});
+    const imageBuffer=Buffer.from(match[2],'base64');if(!imageBuffer.length||imageBuffer.length>5*1024*1024)return json(res,400,{error:'Image must be smaller than 5 MB.'});
+    const ext=match[1]==='jpeg'?'jpg':match[1],id='custom-'+crypto.randomBytes(6).toString('hex'),image=`assets/catalog-${id.slice(7)}.${ext}`;fs.writeFileSync(path.join(root,image),imageBuffer);
+    const product={id,name,category,audience,price,image,tone:'pink'};products.push(product);catalog[id]={name,price};fs.writeFileSync(path.join(root,'products.json'),JSON.stringify(products,null,2));return json(res,201,{products});
   }  if(pathname==='/api/admin/orders'&&req.method==='GET'){
     if(!validSession(req))return json(res,401,{error:'Admin sign-in required.'});
     if(!dbReady())return json(res,503,{error:'Order database is not configured yet.'});
