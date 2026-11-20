@@ -28,12 +28,14 @@ document.querySelector('#google-sign-in').addEventListener('click',async event=>
   try{const client=await getClient();const {error}=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:new URL('index.html',window.location.href).href}});if(error)throw error}
   catch(error){showMessage(error.message);button.disabled=false}
 });
-let emailForOtp='';
 emailForm.addEventListener('submit',async event=>{
-  event.preventDefault();const button=document.querySelector('#email-submit'),email=emailForm.elements.email.value.trim(),code=document.querySelector('#email-code').value.replace(/\D/g,'');button.disabled=true;
-  try{const client=await getClient();if(!emailForm.dataset.codeSent){showMessage('Sending your email code…','success');const {error}=await client.auth.signInWithOtp({email,options:{shouldCreateUser:true}});if(error)throw error;emailForOtp=email;emailForm.dataset.codeSent='true';document.querySelector('#email-code-wrap').hidden=false;document.querySelector('#email-code').required=true;button.innerHTML='VERIFY & SIGN IN <span>↗</span>';showMessage(`A sign-in code was sent to ${email}.`,'success')}else{if(code.length!==6)throw Error('Enter the 6-digit code from your email.');showMessage('Checking your code…','success');const {data,error}=await client.auth.verifyOtp({email:emailForOtp,token:code,type:'email'});if(error)throw error;if(data.user)displaySession(data.user)}}catch(error){showMessage(error.message)}finally{button.disabled=false}
+  event.preventDefault();if(!emailForm.reportValidity())return;const button=emailForm.querySelector('[type="submit"]');button.disabled=true;showMessage('Signing in…','success');
+  try{const client=await getClient();const {data,error}=await client.auth.signInWithPassword({email:emailForm.elements.email.value.trim(),password:emailForm.elements.password.value});if(error)throw error;if(data.user)displaySession(data.user)}catch(error){showMessage(error.message)}finally{button.disabled=false}
 });
-phoneForm.addEventListener('submit',async event=>{
+document.querySelector('#email-sign-up').addEventListener('click',async event=>{
+  if(!emailForm.reportValidity())return;const button=event.currentTarget;button.disabled=true;showMessage('Creating your account…','success');
+  try{const client=await getClient();const {data,error}=await client.auth.signUp({email:emailForm.elements.email.value.trim(),password:emailForm.elements.password.value});if(error)throw error;if(data.session&&data.user)displaySession(data.user);else showMessage('Account created. Check your email to confirm it before logging in.','success')}catch(error){showMessage(error.message)}finally{button.disabled=false}
+});phoneForm.addEventListener('submit',async event=>{
   event.preventDefault();const phone=phoneInput.value.trim();
   if(!/^\+[1-9]\d{7,14}$/.test(phone)){showMessage('Include your country code, like +91 98765 43210.');phoneInput.focus();return}
   const button=phoneForm.querySelector('button[type="submit"]');button.disabled=true;showMessage('Sending your one-time code…','success');
@@ -50,4 +52,5 @@ document.querySelector('#change-number').addEventListener('click',()=>{otpForm.h
 document.querySelector('#sign-out').addEventListener('click',async event=>{try{const client=await getClient();const {error}=await client.auth.signOut();if(error)throw error;document.querySelector('#signed-in-view').hidden=true;document.querySelector('#signed-out-view').hidden=false;showMessage('You’re signed out. See you again soon ✳','success')}catch(error){showMessage(error.message)}});
 if(!configured)showMessage('Sign-in will be active after connecting a Supabase project.','info');
 loadSession();
+
 
